@@ -2,7 +2,7 @@ import { FormEvent, useState } from 'react';
 
 import Modal from 'react-modal';
 
-import { api } from '../../services/api';
+import { useTransactions } from '../../hooks/useTransactions';
 import { Form, RadioBox, TransactionTypeContainer } from './styles';
 import closeImg from '../../assets/close.svg';
 import incomeImg from '../../assets/income.svg';
@@ -17,24 +17,24 @@ export default function NewTransactionModal({
   isOpen,
   onRequestClose,
 }: NewTransactionModalProps) {
-  const [typeTransaction, setTypeTransaction] = useState('deposit');
+  const [type, setType] = useState('deposit');
   const [title, setTitle] = useState('');
-  const [value, setValue] = useState(0);
   const [category, setCategory] = useState('');
+  const [amount, setAmount] = useState(0);
 
-  function handleCreateNewTransaction(event: FormEvent) {
+  const { createTransaction } = useTransactions();
+
+  async function handleCreateNewTransaction(event: FormEvent) {
     event.preventDefault();
 
-    const data = {
-      title,
-      value,
-      category,
-      typeTransaction,
-    };
+    await createTransaction({ title, amount, category, type });
 
-    api.post('/transactions', data).then((r) => {
-      console.log(r);
-    });
+    setTitle('');
+    setCategory('');
+    setType('');
+    setAmount(0);
+
+    onRequestClose();
   }
 
   return (
@@ -59,8 +59,8 @@ export default function NewTransactionModal({
         />
 
         <input
-          onChange={(event) => setValue(Number(event.target.value))}
-          value={value}
+          onChange={(event) => setAmount(Number(event.target.value))}
+          value={amount}
           type="number"
           placeholder="Value"
         />
@@ -68,9 +68,9 @@ export default function NewTransactionModal({
         <TransactionTypeContainer>
           <RadioBox
             onClick={() => {
-              setTypeTransaction('deposit');
+              setType('deposit');
             }}
-            isActive={typeTransaction === 'deposit'}
+            isActive={type === 'deposit'}
             activeColor="green"
             type="button"
           >
@@ -81,9 +81,9 @@ export default function NewTransactionModal({
 
           <RadioBox
             onClick={() => {
-              setTypeTransaction('withdraw');
+              setType('withdraw');
             }}
-            isActive={typeTransaction === 'withdraw'}
+            isActive={type === 'withdraw'}
             activeColor="red"
             type="button"
           >

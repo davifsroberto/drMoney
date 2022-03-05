@@ -6,14 +6,14 @@ export const Container = styled.div`
   gap: 2rem;
   margin-top: -10rem;
 
-  div {
+  section {
     background: var(--shape);
     padding: 1.5rem 2rem;
     border-radius: 0.25em;
     color: var(--text-title);
 
     &.highlight-background {
-      background: var(--gree);
+      background: var(--green);
       color: #fff;
     }
 
